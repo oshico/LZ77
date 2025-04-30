@@ -9,15 +9,13 @@ public class LZ77Decoder {
         StringBuilder output = new StringBuilder();
         for (LZ77Token token : tokens) {
             if (token.getLength() > 0) {
-                int startPosition = output.length() - token.getLength();
-
-                for (int i = 0; i < startPosition + token.getLength(); i++) {
-                    char character = output.charAt(startPosition + i);
-                    output.append(' ');
+                int startPosition = output.length() - token.getDistance();
+                for (int i = 0; i < token.getLength(); i++) {
+                    output.append(output.charAt(startPosition + i));
                 }
             }
-            if (token.getNextChar() != '\0') {
-                output.append(token.getNextChar());
+            if (token.getNextCharacter() != '\0') {
+                output.append(token.getNextCharacter());
             }
         }
         return output.toString();
