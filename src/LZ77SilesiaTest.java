@@ -1,4 +1,6 @@
 import core.LZ77Codec;
+import core.LZ77Encoder;
+import core.LZ77Decoder;
 import io.FileEncoder;
 import io.FileDecoder;
 import metrics.CompressionMetrics;
@@ -6,7 +8,9 @@ import metrics.CompressionMetrics;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,14 +43,17 @@ public class LZ77SilesiaTest {
         // Create timestamp for results directory
         String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
         String resultsDir = "./benchmark-" + timestamp;
-        new File(resultsDir).mkdir();
+        File resultsDirFile = new File(resultsDir);
+        if (!resultsDirFile.mkdir()) {
+            System.err.println("Warning: Could not create directory: " + resultsDir);
+        }
 
         // Initialize summary CSV file
-        String summaryFile = resultsDir + "/summary.csv";
+        Path summaryPath = Paths.get(resultsDir + "/summary.csv");
         try {
-            Files.write(Paths.get(summaryFile),
+            Files.writeString(summaryPath,
                     "Filename,Window Size,Look-ahead Size,Original Size (bytes),Compressed Size (bytes),"
-                            + "Compression Ratio,Avg Code Length (bits/symbol),Encoding Time (ms),Decoding Time (ms)\n".getBytes());
+                            + "Compression Ratio,Avg Code Length (bits/symbol),Encoding Time (ms),Decoding Time (ms)\n");
         } catch (IOException e) {
             System.err.println("Error creating summary file: " + e.getMessage());
             return;
@@ -70,7 +77,10 @@ public class LZ77SilesiaTest {
                         ", Look-ahead Size: " + lookAheadSize + " ===");
 
                 String configDir = resultsDir + "/w" + windowSize + "_la" + lookAheadSize;
-                new File(configDir).mkdir();
+                File configDirFile = new File(configDir);
+                if (!configDirFile.mkdir()) {
+                    System.err.println("Warning: Could not create directory: " + configDir);
+                }
 
                 System.out.println("------------------------------------------------------------");
                 System.out.printf("%-20s %-15s %-15s %-15s %-15s %-15s %-15s\n",
@@ -79,9 +89,10 @@ public class LZ77SilesiaTest {
 
                 for (File file : files) {
                     try {
-                        testFile(file, windowSize, lookAheadSize, configDir, summaryFile);
+                        testFile(file, windowSize, lookAheadSize, configDir, summaryPath.toString());
                     } catch (Exception e) {
                         System.err.println("Error processing file " + file.getName() + ": " + e.getMessage());
+                        System.err.println("Stack trace: " + e);
                     }
                 }
             }
@@ -89,7 +100,10 @@ public class LZ77SilesiaTest {
 
         System.out.println("\n=== Benchmark completed ===");
         System.out.println("Results saved to: " + resultsDir);
-        System.out.println("Summary file: " + summaryFile);
+        System.out.println("Summary file: " + summaryPath);
+
+        // Generate report if needed
+        generateReport(resultsDir);
     }
 
     private static void testFile(File file, int windowSize, int lookAheadSize,
@@ -99,9 +113,8 @@ public class LZ77SilesiaTest {
         String decompressedPath = outputDir + "/" + file.getName() + ".decoded";
 
         // Initialize codec and IO components
-        LZ77Codec codec = new LZ77Codec(windowSize, lookAheadSize);
-        FileEncoder encoder = new FileEncoder(codec.encoder);
-        FileDecoder decoder = new FileDecoder(codec.decoder);
+        FileEncoder encoder = new FileEncoder(new LZ77Encoder(windowSize, lookAheadSize));
+        FileDecoder decoder = new FileDecoder(new LZ77Decoder());
         CompressionMetrics metrics = new CompressionMetrics();
 
         // Encode
@@ -138,9 +151,11 @@ public class LZ77SilesiaTest {
                 encodingTime,
                 decodingTime);
 
-        Files.write(Paths.get(summaryFile),
-                (csvLine + "\n").getBytes(),
-                java.nio.file.StandardOpenOption.APPEND);
+        Files.writeString(
+                Paths.get(summaryFile),
+                csvLine + System.lineSeparator(),
+                StandardOpenOption.APPEND
+        );
     }
 
     private static void verifyFileIntegrity(String originalPath, String decodedPath) {
@@ -200,7 +215,7 @@ public class LZ77SilesiaTest {
             report.append("## Conclusion\n\n");
             // Conclusion about the effectiveness of LZ77 for different types of data
 
-            Files.write(Paths.get(reportPath), report.toString().getBytes());
+            Files.writeString(Paths.get(reportPath), report.toString());
             System.out.println("\nDetailed report generated: " + reportPath);
 
         } catch (IOException e) {
