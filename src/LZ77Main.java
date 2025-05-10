@@ -15,10 +15,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Main class for running the LZ77 compression tool in different modes:
+ * - Custom input tracing
+ * - Corpus compression benchmarking
+ * - File compression/decompression
+ * - Educational testing with poetry
+ */
 public class LZ77Main {
     private static final int DEFAULT_WINDOW_SIZE = 4096;
     private static final int DEFAULT_LOOKAHEAD_SIZE = 40;
 
+    /**
+     * Entry point for the LZ77 compression tool.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int choice;
@@ -72,6 +84,11 @@ public class LZ77Main {
         scanner.close();
     }
 
+    /**
+     * Runs a tracing demonstration using custom user-provided input.
+     *
+     * @param scanner A Scanner object for user input.
+     */
     private static void runCustomInputTest(Scanner scanner) {
         System.out.println("\n=== Custom Input Test (Trace Mode) ===");
         System.out.print("Enter text to compress: ");
@@ -97,6 +114,11 @@ public class LZ77Main {
         System.out.println("\nVerification: " + (isIntact ? "PASSED - Input and output match" : "FAILED - Data corruption detected"));
     }
 
+    /**
+     * Runs compression tests on all files in the Silesia Corpus directory.
+     *
+     * @param scanner A Scanner object for reading user inputs.
+     */
     private static void runSilesiaCorpusTest(Scanner scanner) {
         System.out.println("\n=== Silesia Corpus Compression Test ===");
         System.out.print("Enter path to Silesia Corpus directory: ");
@@ -192,6 +214,10 @@ public class LZ77Main {
         System.out.println("Compression test completed. Results saved to " + csvFile.getPath());
     }
 
+    /**
+     * Runs a small test using a Fernando Pessoa poem to demonstrate compression.
+     * Useful for visualizing compression on natural language input.
+     */
     private static void runPessoaPoemTest() {
         System.out.println("\n=== Fernando Pessoa Poem Test ===");
 
@@ -231,6 +257,11 @@ public class LZ77Main {
         System.out.println("Number of tokens: " + tokens.size());
     }
 
+    /**
+     * Prompts the user to compress a single file using LZ77.
+     *
+     * @param scanner Scanner object to read user input.
+     */
     private static void compressSingleFile(Scanner scanner) {
         System.out.println("\n=== Compress Single File ===");
         System.out.print("Enter path to input file: ");
@@ -267,6 +298,11 @@ public class LZ77Main {
         }
     }
 
+    /**
+     * Prompts the user to decompress a previously compressed LZ77 file.
+     *
+     * @param scanner Scanner object to read user input.
+     */
     private static void decompressSingleFile(Scanner scanner) {
         System.out.println("\n=== Decompress Single File ===");
         System.out.print("Enter path to compressed file: ");

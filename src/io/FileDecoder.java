@@ -2,15 +2,15 @@ package io;
 
 import model.LZ77Token;
 import core.LZ77Decoder;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
+/**
+ * Utility class for decoding a file compressed with LZ77.
+ */
 public class FileDecoder {
     private final LZ77Decoder decoder;
 
@@ -18,19 +18,24 @@ public class FileDecoder {
         this.decoder = decoder;
     }
 
+    /**
+     * Decodes an input file and writes the decoded content to an output file.
+     *
+     * @param inputFile  the compressed file
+     * @param outputFile the destination output file
+     * @return decoding time in nanoseconds
+     */
     public long decodeFile(String inputFile , String outputFile) throws IOException {
         List<LZ77Token> tokens = readTokensFromFile(inputFile);
-
         long startTime = System.nanoTime();
-
         String decodedContent = decoder.decode(tokens);
-
         Files.write(Paths.get(outputFile), decodedContent.getBytes());
-
-        long endTime = System.nanoTime();
-        return endTime - startTime;
+        return System.nanoTime() - startTime;
     }
 
+    /**
+     * Reads LZ77 tokens from a binary file.
+     */
     public List<LZ77Token> readTokensFromFile(String inputFile) throws IOException {
         List<LZ77Token> tokens = new ArrayList<>();
         try (DataInputStream in = new DataInputStream(new FileInputStream(inputFile))) {

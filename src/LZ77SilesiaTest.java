@@ -18,6 +18,9 @@ import java.util.Date;
 /**
  * This class is designed to run automated tests on the Silesia Corpus
  * for benchmarking the LZ77 compression algorithm with different parameters.
+ * <p>
+ * It evaluates multiple window and look-ahead buffer sizes, collects compression
+ * metrics, verifies file integrity, and generates both a summary CSV and a detailed report.
  */
 public class LZ77SilesiaTest {
 
@@ -25,6 +28,12 @@ public class LZ77SilesiaTest {
     private static final int[] WINDOW_SIZES = {1024, 4096, 8192, 16384};
     private static final int[] LOOKAHEAD_SIZES = {16, 32, 64, 128};
 
+    /**
+     * Entry point for running the benchmark tool.
+     * Takes the path to the Silesia Corpus directory as an optional command-line argument.
+     *
+     * @param args Optional command-line arguments (first argument: path to corpus).
+     */
     public static void main(String[] args) {
         System.out.println("=== LZ77 Silesia Corpus Benchmark Tool ===");
         System.out.println("This program runs comprehensive tests on the Silesia Corpus");
@@ -106,6 +115,17 @@ public class LZ77SilesiaTest {
         generateReport(resultsDir);
     }
 
+    /**
+     * Tests a single file using LZ77 compression with the given parameters.
+     * Records metrics, verifies output correctness, and appends results to the summary CSV.
+     *
+     * @param file         The file to be compressed.
+     * @param windowSize   Size of the sliding window.
+     * @param lookAheadSize Size of the look-ahead buffer.
+     * @param outputDir    Directory to store compressed and decompressed files.
+     * @param summaryFile  Path to the summary CSV file.
+     * @throws IOException If an I/O error occurs during compression or writing results.
+     */
     private static void testFile(File file, int windowSize, int lookAheadSize,
                                  String outputDir, String summaryFile) throws IOException {
         String inputPath = file.getPath();
@@ -158,6 +178,13 @@ public class LZ77SilesiaTest {
         );
     }
 
+    /**
+     * Verifies the integrity of the decompressed file by comparing its content
+     * byte-for-byte with the original file.
+     *
+     * @param originalPath   Path to the original input file.
+     * @param decodedPath    Path to the decoded (decompressed) output file.
+     */
     private static void verifyFileIntegrity(String originalPath, String decodedPath) {
         try {
             byte[] originalBytes = Files.readAllBytes(Paths.get(originalPath));
@@ -183,8 +210,10 @@ public class LZ77SilesiaTest {
     }
 
     /**
-     * This method generates a detailed report on the test results
-     * that can be used for the scientific paper.
+     * Generates a basic Markdown report summarizing the test setup and placeholder
+     * sections for further analysis of compression performance.
+     *
+     * @param resultsDir The directory where the report will be saved.
      */
     private static void generateReport(String resultsDir) {
         try {
@@ -223,6 +252,12 @@ public class LZ77SilesiaTest {
         }
     }
 
+    /**
+     * Utility method to convert an array of integers to a comma-separated string.
+     *
+     * @param array The array to convert.
+     * @return A string representation of the array.
+     */
     private static String arrayToString(int[] array) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; i++) {

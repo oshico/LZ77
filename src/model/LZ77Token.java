@@ -1,9 +1,12 @@
 package model;
 
+/**
+ * Represents a single token used in LZ77 encoding.
+ */
 public class LZ77Token {
     private int distance;
-    private  int length;
-    private  char nextCharacter;
+    private int length;
+    private char nextCharacter;
 
     public LZ77Token(int distance, int length, char nextCharacter) {
         this.distance = distance;

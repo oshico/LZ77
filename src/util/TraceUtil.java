@@ -4,9 +4,20 @@ import model.LZ77Token;
 
 import java.util.List;
 
-
+/**
+ * Utility class providing detailed tracing for LZ77 encoding and decoding processes.
+ * Designed for educational use to visualize step-by-step compression and decompression.
+ */
 public class TraceUtil {
 
+    /**
+     * Traces the encoding process of the LZ77 algorithm by printing step-by-step actions.
+     *
+     * @param input         The input string to be encoded.
+     * @param windowSize    The size of the sliding window for matching substrings.
+     * @param lookAheadSize The size of the look-ahead buffer for searching matches.
+     * @return A list of {@link LZ77Token} representing the encoded output.
+     */
     public static List<LZ77Token> traceEncoding(String input, int windowSize, int lookAheadSize) {
         System.out.println("=== LZ77 Encoding Trace ===");
         System.out.println("Input: \"" + input + "\"");
@@ -99,6 +110,11 @@ public class TraceUtil {
     }
 
 
+    /**
+     * Traces the decoding process of LZ77 encoded tokens by printing step-by-step reconstruction.
+     *
+     * @param tokens A list of {@link LZ77Token} to be decoded back to original text.
+     */
     public static void traceDecoding(List<LZ77Token> tokens) {
         System.out.println("=== LZ77 Decoding Trace ===");
         System.out.println("Input Tokens:");
