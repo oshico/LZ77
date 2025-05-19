@@ -103,7 +103,7 @@ benchmark-20250510-140501/
 
 ### ✅ License
 
-**MIT License — see LICENSE for details.**
+**GNU General Public License — see LICENSE for details.**
 
 ### ✍️ Author
 
